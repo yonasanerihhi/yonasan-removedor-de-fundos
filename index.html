@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remover Fundo de Imagem Grátis Online – Criado por Yonasan</title>
+  <meta name="description" content="Remova fundo de imagens grátis, 100% no navegador. Remove xadrez falso de PNG, refina bordas e processa várias fotos. Sem upload, sem cadastro. Ferramenta criada por Yonasan.">
+  <meta name="keywords" content="remover fundo, remover fundo de imagem, background remover grátis, remover fundo png, apagar fundo foto, transparent background, yonasan">
+  <meta name="author" content="Yonasan Erihhi">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yonasanerihhi.github.io/yonasan-removedor-de-fundos/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Remover Fundo de Imagem Grátis – Criado por Yonasan">
+  <meta property="og:description" content="Remova fundos, xadrez falso de PNG e refine bordas. 100% local no navegador. Grátis, sem cadastro e sem enviar suas imagens.">
+  <meta property="og:url" content="https://yonasanerihhi.github.io/yonasan-removedor-de-fundos/">
+  <meta property="og:site_name" content="Remover de Fundos – Criado por Yonasan">
+  <meta property="og:image" content="https://yonasanerihhi.github.io/yonasan-removedor-de-fundos/img/og-cover.jpg">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Remover Fundo de Imagem Grátis – Criado por Yonasan">
+  <meta name="twitter:description" content="Ferramenta gratuita e 100% local no navegador. Criada por Yonasan.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- JSON-LD para SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Remover de Fundos – Criado por Yonasan",
+    "url": "https://yonasanerihhi.github.io/yonasan-removedor-de-fundos/",
+    "description": "Remova fundo de imagens grátis, 100% no navegador. Detecta xadrez de PNG, refina bordas e processa várias fotos sem enviar dados.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Yonasan Erihhi",
+      "url": "https://www.youtube.com/@YonasanErihhi"
+    },
+    "inLanguage": "pt-BR"
+  }
+  </script>
+
+  <!-- GA4: troque G-XXXXXXXXXX pelo seu ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+</head>
+<body>
+  <div id="wm"></div>
+  <div class="wrap">
+    <header>
+      <h1>Remover de Fundos</h1>
+      <a class="by" data-ev="click_canal" target="_blank" rel="noopener" href="https://www.youtube.com/@YonasanErihhi/">
+        <small>Criado por</small><b>Yonasan</b>
+      </a>
+      <div class="hb">
+        <a class="btn yt" data-ev="click_seja_membro" target="_blank" rel="noopener" href="https://www.youtube.com/@YonasanErihhi/join">
+          <svg viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#fff"/><path d="M11 5.5v9l8-4.5z" fill="#e11"/></svg>
+          Inscreva-se no YouTube
+        </a>
+        <a class="btn don" data-ev="click_livepix" target="_blank" rel="noopener" href="https://livepix.gg/yonasan">
+          <svg viewBox="0 0 24 24"><path fill="#32BCAD" d="M12 1.5l4 4-4 4-4-4zM12 14.5l4 4-4 4-4-4zM1.5 12l4-4 4 4-4 4zM14.5 12l4-4 4 4-4 4z"/></svg>
+          Faça uma doação
+        </a>
+      </div>
+    </header>
+
+    <div class="card">
+      <div id="drop">
+        📁 Arraste, cole (Ctrl+V) ou toque para escolher uma ou várias imagens
+        <br><small>Nada é enviado: tudo roda no seu navegador</small>
+      </div>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+
+      <div id="app" hidden>
+        <p class="lbl">👇 Selecione o modo</p>
+        <div class="tabs">
+          <button data-m="a" class="on">⚡ Automático</button>
+          <button data-m="s">🎯 Selecionar fundo</button>
+          <button data-m="e">🛠 Estúdio</button>
+        </div>
+        <div id="strip"></div>
+        <div class="sw">
+          <div class="st ck" id="st">
+            <canvas id="cv"></canvas>
+            <div id="cr"></div>
+          </div>
+        </div>
+        <div class="tolb">
+          <div class="trow"><b>Tolerância</b><span id="tv">40</span></div>
+          <input type="range" id="tol" min="5" max="150" value="40">
+          <p class="hint">Maior = remove mais cores parecidas com o fundo.</p>
+        </div>
+
+        <div class="pn on" data-m="a">
+          <p class="hint">O fundo é detectado sozinho, inclusive o xadrez falso de PNG. Ajuste só a tolerância se precisar.</p>
+        </div>
+
+        <div class="pn" data-m="s">
+          <div class="gh">Cor do fundo</div>
+          <button class="pk" id="pk">🎯 Selecionar na imagem</button>
+          <p class="hint" id="pkh" hidden>👆 Agora toque na imagem, em cima da cor do fundo. Pode tocar em várias cores.</p>
+          <label class="ck2"><input type="checkbox" id="al" checked> Mostrar aviso antes de selecionar</label>
+          <div class="gh">Cores removidas (toque para tirar)</div>
+          <div class="cols" id="swl"></div>
+          <label class="ck2"><input type="checkbox" id="gl"> Remover em toda a imagem (inclusive buracos)</label>
+        </div>
+
+        <div class="pn" data-m="e">
+          <div class="gh">Ferramentas</div>
+          <div class="tb" id="tools">
+            <button data-t="wand" class="on"><i>🪄</i>Varinha</button>
+            <button data-t="er"><i>🧽</i>Apagar</button>
+            <button data-t="rs"><i>🖌</i>Restaurar</button>
+            <button data-t="cp"><i>✂</i>Recortar</button>
+          </div>
+          <div id="bsr" style="display:none">
+            <div class="trow" style="margin-top:8px"><b style="font-size:.85rem">Tamanho do pincel</b></div>
+            <input type="range" id="bs" min="6" max="120" value="36">
+          </div>
+          <div class="tb" id="apr" style="display:none;margin-top:8px">
+            <button id="ap" class="g">✔ Aplicar recorte</button>
+          </div>
+          <div class="gh">Refinar bordas</div>
+          <div class="tb">
+            <button data-r="c"><i>➖</i>Contrair</button>
+            <button data-r="x"><i>➕</i>Expandir</button>
+            <button data-r="b"><i>💧</i>Suavizar</button>
+            <button id="trim"><i>📐</i>Cortar vazio</button>
+          </div>
+          <div class="gh">Fundo da imagem (vai junto no download)</div>
+          <div class="dots" id="bgs"></div>
+          <p class="hint" id="bgn"></p>
+        </div>
+
+        <div id="hv" hidden>
+          <div class="gh">Histórico e visualização</div>
+          <div class="tb">
+            <button id="un"><i>↶</i>Desfazer</button>
+            <button id="re"><i>↷</i>Refazer</button>
+            <button id="rst"><i>⟲</i>Resetar</button>
+            <button id="rall"><i>🗑</i>Resetar tudo</button>
+            <button id="orig"><i>👁</i>Original</button>
+          </div>
+        </div>
+
+        <div class="bar">
+          <button class="o" id="new">📁 Nova imagem</button>
+          <button class="g" id="dl">⬇ Baixar PNG</button>
+          <button class="g" id="da" hidden>⬇ Baixar todas (separadas)</button>
+          <button class="g" id="dz" hidden>📦 Baixar tudo (ZIP)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp">
+      <a class="bn" data-ev="click_seja_membro" target="_blank" rel="noopener" href="https://www.youtube.com/@YonasanErihhi/join">
+        <img src="img/yona-membro.jpg" alt="Yonasan – Seja membro no YouTube" loading="lazy">
+        <div>
+          <svg class="ico" viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#fff"/><path d="M11 5.5v9l8-4.5z" fill="#e11"/></svg>
+          <b>Seja membro no YouTube</b>
+          <p>Apoie o canal por só <u>R$ 3,99</u>. É baratinho e você ganha benefícios exclusivos!</p>
+          <span class="cta">Virar membro ▶</span>
+        </div>
+      </a>
+      <a class="bn lp" data-ev="click_livepix" target="_blank" rel="noopener" href="https://livepix.gg/yonasan">
+        <img src="img/yona-pix.jpg" alt="Yonasan – Apoie via LivePix" loading="lazy">
+        <div>
+          <b>☕ Pague um café</b>
+          <p>A ferramenta te salvou tempo? Mande qualquer valor via Pix pelo LivePix. Todo apoio ajuda!</p>
+          <span class="cta">Apoiar via LivePix</span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      <a data-ev="click_canal" href="https://www.youtube.com/@YonasanErihhi/" target="_blank" rel="noopener">Canal</a>
+      ·
+      <a data-ev="click_linktree" href="https://linktr.ee/yonasan" target="_blank" rel="noopener">Redes sociais</a>
+      ·
+      <button type="button" class="terms-btn" id="open-terms">Termos de Uso</button>
+      <p style="margin-top:12px">
+        As imagens são processadas <strong>só no seu navegador</strong> e não são enviadas a servidor algum.
+        Usamos Google Analytics para medir acessos e cliques de forma anônima.
+        Você é responsável pelos direitos das imagens que enviar.
+      </p>
+      <p style="margin-top:6px;font-size:.8rem">
+        © Yonasan · Ferramenta grátis para uso pessoal e legítimo ·
+        <button type="button" class="terms-btn" id="open-terms-2" style="margin:0;padding:2px 8px;font-size:.8rem">Ver Termos</button>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Modal genérico -->
+  <div id="md" hidden>
+    <div class="mb">
+      <p id="mt"></p>
+      <div id="mbtn"></div>
+    </div>
+  </div>
+
+  <!-- Modal Termos de Uso -->
+  <div id="terms-modal" hidden>
+    <div class="terms-box" role="dialog" aria-labelledby="terms-title">
+      <span class="free-badge">100% GRÁTIS PARA USAR</span>
+      <h2 id="terms-title">Termos de Uso – Remover de Fundos</h2>
+
+      <p>
+        O <strong>Remover de Fundos</strong> é uma ferramenta gratuita criada por
+        <strong>Yonasan</strong> para ajudar você a remover fundos de imagens de forma rápida e privada.
+      </p>
+
+      <h3>1. Uso permitido e amigável</h3>
+      <p>Você é livre para:</p>
+      <ul>
+        <li>Subir imagens que você mesmo criou;</li>
+        <li>Subir imagens de IA (geradas por você ou com licença que permita o uso);</li>
+        <li>Subir qualquer imagem para a qual você tenha autorização ou licença adequada;</li>
+        <li>Usar o resultado do processamento para fins pessoais, educacionais, de conteúdo ou comerciais legítimos, desde que respeite os direitos de terceiros.</li>
+      </ul>
+      <p>
+        O processamento acontece <strong>inteiramente no seu navegador</strong>.
+        Nenhuma imagem é enviada a servidores, não armazenamos seus arquivos e não ficamos com nenhum dado das suas fotos.
+      </p>
+
+      <h3>2. Sobre cópias e uso da identidade do canal</h3>
+      <p>
+        Esta ferramenta, o layout e a identidade do canal (nome, imagem e marca “Remover de Fundos”)
+        pertencem a Yonasan. Pedimos que:
+      </p>
+      <ul>
+        <li>Não redistribua ou hospede o código em outro site apresentando a ferramenta como se fosse sua;</li>
+        <li>Não modifique o código para atribuir a criação a outra pessoa ou empresa;</li>
+        <li>Não use a imagem, nome ou identidade de Yonasan em sites que imitem esta página, anúncios enganosos ou qualquer coisa que possa confundir outras pessoas;</li>
+        <li>Não use uma cópia desta ferramenta para promover golpes, produtos falsos ou conteúdo ilegal.</li>
+      </ul>
+      <p>
+        Em resumo: <strong>use à vontade para processar suas imagens</strong>.
+        Só peço que não copie a ferramenta como produto próprio e não use a imagem do canal para enganar ninguém — isso ajuda a proteger você e o canal.
+      </p>
+
+      <h3>3. Responsabilidade</h3>
+      <ul>
+        <li>Você é o único responsável pelos direitos autorais e de uso das imagens que processar.</li>
+        <li>A ferramenta é oferecida “como está”, sem garantias de resultado perfeito em todos os casos.</li>
+        <li>Yonasan não se responsabiliza por usos indevidos feitos por terceiros nem por danos decorrentes do uso da ferramenta.</li>
+      </ul>
+
+      <h3>4. Apoio e gratidão</h3>
+      <p>
+        A ferramenta é e continua <strong>grátis</strong>. Se quiser apoiar o trabalho, pode se tornar
+        membro do canal no YouTube ou contribuir via LivePix — mas isso é totalmente opcional.
+      </p>
+
+      <p style="margin-top:14px;font-size:.85rem">
+        Ao usar o Remover de Fundos, você concorda com estes termos.
+        Em caso de dúvidas: canal
+        <a href="https://www.youtube.com/@YonasanErihhi/" target="_blank" rel="noopener" style="color:#35b6ff">@YonasanErihhi</a>.
+      </p>
+
+      <button type="button" class="close-terms g" id="close-terms">Entendi, continuar</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Segundo botão de termos no rodapé
+    document.getElementById('open-terms-2')?.addEventListener('click', () => {
+      document.getElementById('open-terms')?.click();
+    });
+  </script>
+</body>
+</html>
