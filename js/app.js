@@ -17,7 +17,7 @@ let W, H, orig, cur, hist = [], redo = [], picks = [], tool = 'wand', mode = 'a'
 const clone = (d) => new ImageData(new Uint8ClampedArray(d.data), d.width, d.height);
 const draw = () => {
   sO = 0;
-  $('#orig').classList.remove('on');
+  $$('#orig,#eye').forEach((b) => b.classList.remove('on'));
   cx.putImageData(cur, 0, 0);
 };
 const snap = () => {
@@ -25,12 +25,12 @@ const snap = () => {
   if (hist.length > 25) hist.shift();
   redo = [];
 };
-const toast = (t) => {
+const toast = (t, ms = 4500) => {
   const e = $('#toast');
   e.innerHTML = t;
   e.style.display = 'block';
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => (e.style.display = 'none'), 4500);
+  toast.t = setTimeout(() => (e.style.display = 'none'), ms);
 };
 
 $$('[data-ev]').forEach((a) => a.addEventListener('click', () => ev(a.dataset.ev)));
@@ -38,12 +38,14 @@ $$('[data-ev]').forEach((a) => a.addEventListener('click', () => ev(a.dataset.ev
 // ---------- entrada de arquivos ----------
 const drop = $('#drop');
 const file = $('#file');
-drop.onclick = () => {
-  addMode = 0;
+drop.onclick = (e) => {
+  if (e.target.closest && (e.target.closest('#demo') || e.target.closest('#demo-thumb'))) return;
+  // Já tem imagem aberta? Novas entram na lista (não apagam as antigas)
+  addMode = !$('#app').hidden ? 1 : 0;
   file.click();
 };
 file.onchange = () => {
-  load(file.files, addMode);
+  load(file.files, addMode || !$('#app').hidden);
   file.value = '';
 };
 ['dragenter', 'dragover'].forEach((e) =>
@@ -63,7 +65,8 @@ addEventListener('paste', (e) => {
   if (f.length) load(f, !$('#app').hidden);
 });
 $('#new').onclick = () => {
-  addMode = 0;
+  // "Nova imagem" também adiciona à lista, em vez de substituir
+  addMode = 1;
   file.click();
 };
 
@@ -74,29 +77,39 @@ const decode = (f) =>
     im.onload = () => {
       let w = im.naturalWidth,
         h = im.naturalHeight;
+      let resized = false;
       if (Math.max(w, h) > 3000) {
         const s = 3000 / Math.max(w, h);
         w = Math.round(w * s);
         h = Math.round(h * s);
+        resized = true;
       }
       const c = document.createElement('canvas');
       c.width = w;
       c.height = h;
-      const x = c.getContext('2d');
+      const x = c.getContext('2d', { willReadFrequently: true });
       x.drawImage(im, 0, 0, w, h);
-      const o = x.getImageData(0, 0, w, h);
-      URL.revokeObjectURL(im.src);
+      let o;
+      try {
+        o = x.getImageData(0, 0, w, h);
+      } catch (err) {
+        if (typeof f !== 'string') URL.revokeObjectURL(im.src);
+        r(0);
+        return;
+      }
+      if (typeof f !== 'string') URL.revokeObjectURL(im.src);
       r({
-        nm: f.name.replace(/\.[^.]+$/, '') || 'img',
+        nm: (typeof f === 'string' ? 'exemplo' : f.name || 'img').replace(/\.[^.]+$/, '') || 'img',
         orig: o,
         src0: o,
         cur: clone(o),
         hist: [],
         redo: [],
         picks: [],
+        resized,
       });
     };
-    im.src = URL.createObjectURL(f);
+    im.src = typeof f === 'string' ? f : URL.createObjectURL(f);
   });
 
 function use(it) {
@@ -165,15 +178,47 @@ $('#strip').onclick = (e) => {
   }
 };
 
+// Depois de carregar imagens: encolhe a área de upload e rola até o editor
+function miniDrop() {
+  if (!document.getElementById('mini-drop-css')) {
+    const st = document.createElement('style');
+    st.id = 'mini-drop-css';
+    st.textContent =
+      '#drop.mini{min-height:0!important;height:48px!important;padding:0 14px!important;margin-bottom:10px!important;' +
+      'display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden}' +
+      '#drop.mini small,#drop.mini .btn-demo,#drop.mini #demo-thumb{display:none!important}' +
+      '#drop.mini .drop-main{font-size:.9rem;margin:0}';
+    document.head.append(st);
+  }
+  drop.hidden = false;
+  drop.classList.add('mini');
+  const m = drop.querySelector('.drop-main');
+  if (m) m.textContent = '＋ Arraste, cole (Ctrl+V) ou toque para adicionar mais imagens';
+}
+
+function scrollToEditor() {
+  setTimeout(() => {
+    const top = drop.getBoundingClientRect().top + window.scrollY - 8;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }, 80);
+}
+
 async function load(fs, add) {
-  fs = [...fs].filter((f) => f.type.startsWith('image/')).slice(0, 20);
-  if (!fs.length) return;
+  const list = [...fs];
+  const fromFiles = list.filter((f) => f && f.type && f.type.startsWith('image/')).slice(0, 20);
+  const fromUrl = list.filter((f) => typeof f === 'string').slice(0, 20);
+  const inputs = fromFiles.length ? fromFiles : fromUrl;
+  if (!inputs.length) return;
   save();
   toast('Processando…');
   const ns = [];
-  for (const f of fs) {
+  let anyResized = false;
+  for (const f of inputs) {
     const it = await decode(f);
-    if (it) ns.push(it);
+    if (it) {
+      if (it.resized) anyResized = true;
+      ns.push(it);
+    }
   }
   if (!ns.length) return;
   if (!add) items = [];
@@ -185,15 +230,113 @@ async function load(fs, add) {
     save();
     await new Promise((r) => setTimeout(r));
   }
-  drop.hidden = true;
+  miniDrop();
   $('#app').hidden = false;
+  const steps = document.querySelector('.steps');
+  if (steps) steps.hidden = true;
   sel(first);
-  toast(
+  scrollToEditor();
+  glowEye();
+  let msg =
     ns.length > 1
       ? ns.length + ' imagens prontas! Ajuste uma a uma ou baixe tudo.'
-      : 'Pronto! Ajuste nos modos ou baixe.'
-  );
+      : 'Pronto! Ajuste nos modos ou baixe o PNG.';
+  if (anyResized) {
+    msg +=
+      ' (Imagem muito grande — reduzimos um pouco para o navegador não travar.)';
+  }
+  toast(msg);
 }
+
+
+/**
+ * Exemplo — mesmo jeito do antigo exemplo.png.
+ * Arquivo: img/exemplo-site.jpg  (SEM espaço no nome!)
+ * Fallback: gera no canvas se o arquivo não puder ser lido (file://).
+ */
+function makeDemoBlob() {
+  const w = 720, h = 480;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const x = c.getContext('2d');
+  x.fillStyle = '#bae6c4';
+  x.fillRect(0, 0, w, h);
+  x.fillStyle = '#1e78dc';
+  x.beginPath();
+  x.ellipse(300, 200, 90, 95, 0, 0, Math.PI * 2);
+  x.fill();
+  x.fillStyle = '#fff';
+  x.beginPath();
+  x.ellipse(275, 185, 16, 20, 0, 0, Math.PI * 2);
+  x.ellipse(325, 185, 16, 20, 0, 0, Math.PI * 2);
+  x.fill();
+  x.fillStyle = '#1a2850';
+  x.beginPath();
+  x.ellipse(275, 188, 7, 9, 0, 0, Math.PI * 2);
+  x.ellipse(325, 188, 7, 9, 0, 0, Math.PI * 2);
+  x.fill();
+  x.fillStyle = '#1964c8';
+  x.beginPath();
+  const rr = (x0, y0, ww, hh, r) => {
+    x.beginPath();
+    x.moveTo(x0 + r, y0);
+    x.arcTo(x0 + ww, y0, x0 + ww, y0 + hh, r);
+    x.arcTo(x0 + ww, y0 + hh, x0, y0 + hh, r);
+    x.arcTo(x0, y0 + hh, x0, y0, r);
+    x.arcTo(x0, y0, x0 + ww, y0, r);
+    x.closePath();
+    x.fill();
+  };
+  x.fillStyle = '#1964c8';
+  rr(240, 280, 120, 140, 24);
+  x.fillStyle = '#fff';
+  rr(400, 150, 260, 180, 12);
+  x.fillStyle = '#e11';
+  rr(420, 175, 100, 80, 8);
+  return new Promise((res) => c.toBlob((b) => res(b), 'image/png'));
+}
+
+// Só em file:// (uso local) carrega a imagem embutida; online não baixa nada extra
+function loadDemoData() {
+  return new Promise((res) => {
+    if (window.DEMO_IMAGE_DATA_URL || location.protocol !== 'file:') return res();
+    const sc = document.createElement('script');
+    sc.src = 'js/demo-data.js';
+    sc.onload = sc.onerror = () => res();
+    document.head.append(sc);
+  });
+}
+
+async function runDemo(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  ev('click_demo');
+  const before = items.length;
+
+  // 1) Imagem embutida (js/demo-data.js): funciona em uso local (file://)
+  await loadDemoData();
+  if (window.DEMO_IMAGE_DATA_URL) {
+    await load([window.DEMO_IMAGE_DATA_URL], !$('#app').hidden);
+    if (items.length > before) return;
+  }
+
+  // Igual ao antigo exemplo.png — só muda o nome do arquivo
+  await load(['img/exemplo-site.jpg'], !$('#app').hidden);
+  if (items.length > before) return;
+
+  await load(['img/exemplo site.jpg'], !$('#app').hidden);
+  if (items.length > before) return;
+
+  // O que fazia o antigo "sempre funcionar" em file://: pixels criados no canvas (File)
+  const blob = await makeDemoBlob();
+  const f = new File([blob], 'exemplo.png', { type: 'image/png' });
+  await load([f], !$('#app').hidden);
+}
+
+$('#demo')?.addEventListener('click', runDemo);
+$('#demo-thumb')?.addEventListener('click', runDemo);
 
 // ---------- núcleo ----------
 const tol = () => +$('#tol').value;
@@ -386,11 +529,11 @@ function ta() {
     mode == 'e' && (tool == 'er' || tool == 'rs' || tool == 'cp') ? 'none' : 'auto';
 }
 
-$$('.tabs button').forEach(
+$$('.tabs button[data-m]').forEach(
   (b) =>
     (b.onclick = () => {
       mode = b.dataset.m;
-      $$('.tabs button').forEach((x) => x.classList.toggle('on', x == b));
+      $$('.tabs button[data-m]').forEach((x) => x.classList.toggle('on', x == b));
       $$('.pn').forEach((p) => p.classList.toggle('on', p.dataset.m == mode));
       $('#hv').hidden = mode == 'a';
       if (mode != 's') setPick(0);
@@ -659,11 +802,63 @@ $('#bgs').onclick = (e) => {
 };
 setBg('');
 
-$('#orig').onclick = () => {
-  sO = !sO;
+const showOrig = (on) => {
+  if (!orig) return;
+  sO = !!on;
   cx.putImageData(sO ? orig : cur, 0, 0);
-  $('#orig').classList.toggle('on', sO);
+  $$('#orig,#eye').forEach((b) => b.classList.toggle('on', sO));
+  $('#orig').classList.toggle('hold-on', sO);
+  $('#eye')?.classList.remove('glow');
 };
+// Clique = alternar | Segurar = ver original até soltar
+const bindOrig = (btn) => {
+  let tmr = 0,
+    held = false,
+    locked = false;
+  btn.addEventListener('pointerdown', (e) => {
+    if (!orig) return;
+    held = false;
+    locked = false;
+    tmr = setTimeout(() => {
+      held = true;
+      showOrig(true);
+    }, 320);
+  });
+  const end = () => {
+    clearTimeout(tmr);
+    if (held) {
+      showOrig(false);
+      locked = true;
+    }
+    held = false;
+  };
+  btn.addEventListener('pointerup', end);
+  btn.addEventListener('pointerleave', end);
+  btn.addEventListener('pointercancel', end);
+  btn.addEventListener('click', (e) => {
+    if (locked) {
+      e.preventDefault();
+      locked = false;
+      return;
+    }
+    showOrig(!sO);
+  });
+};
+['#orig', '#eye'].forEach((q) => {
+  const b = $(q);
+  if (b) bindOrig(b);
+});
+
+// Faz o olho brilhar por alguns segundos quando entram imagens novas
+function glowEye() {
+  const e = $('#eye');
+  if (!e) return;
+  e.classList.remove('glow');
+  void e.offsetWidth;
+  e.classList.add('glow');
+  clearTimeout(glowEye.t);
+  glowEye.t = setTimeout(() => e.classList.remove('glow'), 4200);
+}
 
 // ---------- exportar ----------
 const blob = () =>
@@ -692,9 +887,26 @@ const dlink = (b, n) => {
 
 const thanks = () => {
   ev('use_tool_success');
-  toast(
-    '✅ Pronto! Curtiu? <a onclick="ev(\'click_seja_membro\')" style="color:#fff" target="_blank" href="https://www.youtube.com/@YonasanErihhi/join">Vire membro por R$ 3,99</a> 💙'
-  );
+  if (document.body.classList.contains('electron-app')) {
+    toast('✅ PNG pronto! Obrigado por apoiar o canal 💙');
+    return;
+  }
+  let msg =
+    '✅ PNG pronto! Vale salvar o site nos favoritos. Curtiu? Apoie com um Pix ou ';
+  try {
+    if (!sessionStorage.getItem('yona_desk_tip')) {
+      sessionStorage.setItem('yona_desk_tip', '1');
+      msg =
+        '✅ PNG pronto! Membros têm <a onclick="ev(\'click_seja_membro\')" style="color:#fff" target="_blank" href="https://www.youtube.com/@YonasanErihhi/join">versão desktop no PC</a> (a partir de R$ 3,99*) · ou mande um Pix 💙<br><small>*Valor de 24/10/2026, sujeito a mudanças.</small>';
+    } else {
+      msg +=
+        '<a onclick="ev(\'click_seja_membro\')" style="color:#fff" target="_blank" href="https://www.youtube.com/@YonasanErihhi/join">vire membro (R$ 3,99*)</a> 💙<br><small>*Valor de 24/10/2026, sujeito a mudanças.</small>';
+    }
+  } catch (e) {
+    msg +=
+      '<a onclick="ev(\'click_seja_membro\')" style="color:#fff" target="_blank" href="https://www.youtube.com/@YonasanErihhi/join">vire membro</a> 💙';
+  }
+  toast(msg, 8000);
 };
 
 $('#dl').onclick = async () => {

@@ -27,7 +27,7 @@ Não há upload para servidor: as imagens nunca saem do seu dispositivo.
 - **Processamento local**: todo o trabalho (remoção de fundo, pincéis, recorte) acontece no JavaScript do navegador, usando Canvas.
 - **Nenhuma imagem é enviada** a qualquer servidor do autor ou de terceiros.
 - **Não armazenamos** arquivos, histórico de edições nem dados das fotos.
-- Opcionalmente é usado **Google Analytics** apenas para medir acessos e cliques de forma anônima (páginas vistas, botões de apoio). Isso não inclui o conteúdo das imagens.
+- Opcionalmente é usado **Google Analytics** (que pode usar cookies) apenas para medir acessos e cliques de forma anônima (páginas vistas, botões de apoio). Isso não inclui o conteúdo das imagens.
 
 Você pode usar a ferramenta com tranquilidade para imagens pessoais, de trabalho, de IA ou qualquer material para o qual tenha direito de uso.
 
@@ -74,8 +74,15 @@ Só peço que não copie a ferramenta como produto próprio e não use a imagem 
 
 A ferramenta continua grátis. Se quiser apoiar o trabalho:
 
-- [Membro do YouTube](https://www.youtube.com/@YonasanErihhi/join)
+- [Membro do YouTube](https://www.youtube.com/@YonasanErihhi/join) (a partir de R$ 3,99*)
 - [LivePix](https://livepix.gg/yonasan)
+
+### 4.5 Valores e benefícios para membros
+
+- Os valores citados (como a assinatura de membro a partir de **R$ 3,99***) foram conferidos em **24/10/2026** e estão **sujeitos a mudanças** pelo YouTube ou pelo autor. Vale sempre o valor exibido na página de membros do canal no momento da assinatura.
+- Os benefícios para membros (como a versão desktop para Windows, wallpapers e chat exclusivo) podem ser alterados, ampliados ou descontinuados com o tempo e são entregues conforme as regras de cada nível de membro.
+
+\* Valor de 24/10/2026, sujeito a mudanças.
 
 ---
 
@@ -99,7 +106,10 @@ Dica: no modo Estúdio, “Cortar vazio” remove as margens transparentes autom
 | `index.html` | Página principal |
 | `css/style.css` | Estilos |
 | `js/app.js` | Lógica da ferramenta |
-| `img/` | Imagens de apoio (membro, LivePix, og-cover) |
+| `img/` | Imagens (ícone, exemplo, banners de membro e LivePix, og-cover) |
+| `sw.js` | Service Worker (cache para abrir mais rápido e funcionar offline básico) |
+| `manifest.json` | Configuração para instalar como app (PWA) |
+| `robots.txt` e `sitemap.xml` | Indexação em buscadores |
 | `README.md` | Visão geral e link do app |
 | `docs/documentacao.md` | Este arquivo |
 
@@ -120,5 +130,7 @@ Se você quiser adaptar a ferramenta para uso interno da sua empresa ou projeto 
 
 - Canal: [youtube.com/@YonasanErihhi](https://www.youtube.com/@YonasanErihhi/)
 - Redes: [linktr.ee/yonasan](https://linktr.ee/yonasan)
+
+*Documentação atualizada em 24/10/2026.*
 
 Obrigado por usar o Remover de Fundos de forma legal e respeitosa 💙

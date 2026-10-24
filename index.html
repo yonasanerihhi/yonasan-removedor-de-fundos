@@ -8,7 +8,9 @@
   <meta name="keywords" content="remover fundo, remover fundo de imagem, background remover grátis, remover fundo png, apagar fundo foto, transparent background, yonasan">
   <meta name="author" content="Yonasan Erihhi">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://yonasanerihhi.github.io/yonasan-removedor-de-fundos/">
+    <link rel="icon" type="image/png" href="img/icon.png">
+  <link rel="apple-touch-icon" href="img/icon.png">
+<link rel="canonical" href="https://yonasanerihhi.github.io/yonasan-removedor-de-fundos/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -27,6 +29,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#050a1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Remover de Fundos">
 
   <!-- JSON-LD para SEO -->
   <script type="application/ld+json">
@@ -63,6 +70,19 @@
 </head>
 <body>
   <div id="wm"></div>
+
+  <aside class="side-rails left" aria-label="Apoie o canal">
+    <a data-ev="click_seja_membro" href="https://www.youtube.com/@YonasanErihhi/join" target="_blank" rel="noopener" title="Seja membro no YouTube">
+      <img src="img/yona-membro.jpg" alt="Seja membro no YouTube" width="120" height="213" loading="lazy">
+    </a>
+  </aside>
+  <aside class="side-rails right" aria-label="Apoio voluntário">
+    <a class="side-rail-pix" data-ev="click_livepix" href="https://livepix.gg/yonasan" target="_blank" rel="noopener" title="Pague um café via LivePix">
+      <img src="img/yona-pix.jpg" alt="Apoie via LivePix" width="120" height="213" loading="lazy">
+      <span class="rail-cap">☕ Pague um café</span>
+    </a>
+  </aside>
+
   <div class="wrap">
     <header>
       <h1>Remover de Fundos</h1>
@@ -81,10 +101,22 @@
       </div>
     </header>
 
+    <div class="steps" aria-label="Como funciona">
+      <div class="step"><span>1</span><p>Envie a imagem</p></div>
+      <div class="step"><span>2</span><p>Ajuste se precisar</p></div>
+      <div class="step"><span>3</span><p>Baixe o PNG transparente</p></div>
+      <p class="steps-note">Tudo no seu navegador — nada é enviado a servidor</p>
+    </div>
+
     <div class="card">
       <div id="drop">
-        📁 Arraste, cole (Ctrl+V) ou toque para escolher uma ou várias imagens
-        <br><small>Nada é enviado: tudo roda no seu navegador</small>
+        <div class="drop-main">📁 Arraste, cole (Ctrl+V) ou toque para escolher uma ou várias imagens</div>
+        <small>Nada é enviado: tudo roda no seu navegador</small>
+        <button type="button" class="btn-demo" id="demo" data-ev="click_demo">✨ Testar com uma imagem de exemplo</button>
+        <button type="button" class="demo-thumb" id="demo-thumb" data-ev="click_demo" title="Usar esta imagem de exemplo">
+          <img id="demo-preview-img" src="img/exemplo-site.jpg" alt="Prévia do exemplo" width="280" height="160" loading="eager">
+          <span>Exemplo</span>
+        </button>
       </div>
       <input type="file" id="file" accept="image/*" multiple hidden>
 
@@ -94,6 +126,7 @@
           <button data-m="a" class="on">⚡ Automático</button>
           <button data-m="s">🎯 Selecionar fundo</button>
           <button data-m="e">🛠 Estúdio</button>
+          <button type="button" id="eye" class="eye" title="Ver original (clique para alternar · segure para comparar)" aria-label="Ver original"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
         </div>
         <div id="strip"></div>
         <div class="sw">
@@ -147,6 +180,7 @@
           <div class="gh">Fundo da imagem (vai junto no download)</div>
           <div class="dots" id="bgs"></div>
           <p class="hint" id="bgn"></p>
+          <p class="hint keys-hint">Atalhos: <kbd>Ctrl</kbd>+<kbd>Z</kbd> desfaz · <kbd>Ctrl</kbd>+<kbd>Y</kbd> refaz · <kbd>Ctrl</kbd>+<kbd>V</kbd> cola imagem</p>
         </div>
 
         <div id="hv" hidden>
@@ -156,8 +190,9 @@
             <button id="re"><i>↷</i>Refazer</button>
             <button id="rst"><i>⟲</i>Resetar</button>
             <button id="rall"><i>🗑</i>Resetar tudo</button>
-            <button id="orig"><i>👁</i>Original</button>
+            <button id="orig" title="Clique para alternar · Segure para ver o original"><i>👁</i>Original</button>
           </div>
+          <p class="hint">Dica: segure o botão <strong>Original</strong> para comparar; solte para voltar.</p>
         </div>
 
         <div class="bar">
@@ -169,24 +204,116 @@
       </div>
     </div>
 
+    <div class="after-tool">
     <div class="sp">
       <a class="bn" data-ev="click_seja_membro" target="_blank" rel="noopener" href="https://www.youtube.com/@YonasanErihhi/join">
-        <img src="img/yona-membro.jpg" alt="Yonasan – Seja membro no YouTube" loading="lazy">
-        <div>
-          <svg class="ico" viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#fff"/><path d="M11 5.5v9l8-4.5z" fill="#e11"/></svg>
-          <b>Seja membro no YouTube</b>
-          <p>Apoie o canal por só <u>R$ 3,99</u>. É baratinho e você ganha benefícios exclusivos!</p>
+        <img src="img/yona-membro.jpg" alt="Personagem Yonasan convidando a virar membro no YouTube e ganhar o app desktop" loading="lazy" width="160" height="284">
+        <div class="bn-body">
+          <span class="bn-kicker">
+            <svg viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="5" fill="#fff"/><path d="M11 5.5v9l8-4.5z" fill="#e11"/></svg>
+            Membros do canal
+          </span>
+          <b>App no PC + benefícios</b>
+          <p>
+            Por <u>R$&nbsp;3,99*</u> você apoia o canal e leva a <strong>versão desktop</strong> (Windows, portátil)
+            junto com wallpapers, chat exclusivo e outros mimos. Acesso à versão atual para sempre.
+          </p>
+          <small class="price-note">*Valor conferido em 24/10/2026 e sujeito a mudanças. Confira o valor atual na página de membros do YouTube.</small>
           <span class="cta">Virar membro ▶</span>
         </div>
       </a>
       <a class="bn lp" data-ev="click_livepix" target="_blank" rel="noopener" href="https://livepix.gg/yonasan">
-        <img src="img/yona-pix.jpg" alt="Yonasan – Apoie via LivePix" loading="lazy">
-        <div>
+        <img src="img/yona-pix.jpg" alt="Personagem Yonasan tomando café – apoie o canal via Pix no LivePix" loading="lazy" width="160" height="284">
+        <div class="bn-body">
+          <span class="bn-kicker">Apoio voluntário</span>
           <b>☕ Pague um café</b>
-          <p>A ferramenta te salvou tempo? Mande qualquer valor via Pix pelo LivePix. Todo apoio ajuda!</p>
+          <p>
+            A ferramenta te salvou tempo? Qualquer valor via Pix ajuda a manter e criar
+            <strong>mais ferramentas grátis</strong> como esta.
+          </p>
           <span class="cta">Apoiar via LivePix</span>
         </div>
       </a>
+    </div>
+
+    <section class="video-slot" aria-label="Vídeo tutorial">
+      <h2>Como usar a ferramenta</h2>
+      <p class="video-note">Em breve: tutorial completo no canal. Quando o vídeo sair, o player aparece aqui.</p>
+      <div class="video-frame">
+        <!-- Quando tiver o vídeo, troque o bloco abaixo por:
+        <iframe
+          src="https://www.youtube.com/embed/SEU_VIDEO_ID"
+          title="Como usar o Remover de Fundos – Yonasan"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+        -->
+        <div class="video-placeholder">
+          <strong>🎬 Vídeo em breve</strong>
+          <span>Tutorial de como remover o fundo com esta ferramenta</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Remover fundo de imagem online, grátis e sem cadastro</h2>
+      <p class="faq-lead">
+        O <strong>Remover de Fundos</strong> é uma ferramenta gratuita para tirar o fundo de fotos e imagens
+        e baixar um <strong>PNG transparente</strong>, direto no navegador. Sem cadastro, sem marca d’água e
+        sem enviar suas imagens para a internet. Funciona no celular e no computador, com PNG, JPG e WEBP,
+        e remove até o <strong>xadrez falso</strong> de PNGs que vêm com o quadriculado desenhado.
+      </p>
+
+      <h3>Perguntas frequentes</h3>
+
+      <details>
+        <summary>Como tirar o fundo de uma imagem de graça?</summary>
+        <p>Envie a imagem e o modo Automático já remove o fundo. Se sobrar ou faltar um pouco, ajuste a tolerância e baixe o PNG transparente.</p>
+      </details>
+
+      <details>
+        <summary>Minhas imagens ficam salvas em algum servidor?</summary>
+        <p>Não. Tudo é processado no seu próprio navegador. As imagens nunca são enviadas nem guardadas.</p>
+      </details>
+
+      <details>
+        <summary>Dá para remover o fundo de várias imagens de uma vez?</summary>
+        <p>Sim, até 20 imagens. Depois você baixa uma por uma ou tudo junto em um ZIP.</p>
+      </details>
+
+      <details>
+        <summary>Como remover aquele fundo xadrez falso de PNG?</summary>
+        <p>O modo Automático detecta o quadriculado sozinho. Se sobrar alguma parte, aumente a tolerância ou use o Modo Estúdio.</p>
+      </details>
+
+      <details>
+        <summary>Posso usar o resultado em projetos comerciais?</summary>
+        <p>Pode, desde que você tenha direito de usar a imagem original. Veja os Termos de uso no rodapé.</p>
+      </details>
+
+      <details>
+        <summary>Existe versão para instalar no computador?</summary>
+        <p>
+          Sim. Membros do canal no YouTube (a partir de <strong>R$&nbsp;3,99*</strong>) têm acesso à
+          <strong>versão desktop para Windows</strong> — portátil, sem instalador chato — no pacote com
+          wallpapers, chat exclusivo e outros benefícios. É a forma de ter a versão atual “para sempre” no PC,
+          mesmo se a página online mudar de endereço no futuro.
+          <a href="https://www.youtube.com/@YonasanErihhi/join" target="_blank" rel="noopener" data-ev="click_seja_membro">Virar membro</a>
+          <small class="price-note">*Valor conferido em 24/10/2026 e sujeito a mudanças. Confira o valor atual na página de membros do YouTube.</small>
+        </p>
+      </details>
+
+      <details>
+        <summary>O site vai ficar online para sempre?</summary>
+        <p>
+          A ideia é manter a ferramenta no ar e grátis. Com o tempo o endereço (URL) pode mudar —
+          quando isso acontecer, aviso no <strong>canal do YouTube</strong> e no <strong>Discord</strong>.
+          Se quiser uma cópia estável no PC, a versão desktop dos membros é o caminho.
+          Dúvidas: <a href="mailto:yonasanerihhi@gmail.com">yonasanerihhi@gmail.com</a>
+        </p>
+      </details>
+    </section>
     </div>
 
     <footer>
@@ -196,9 +323,11 @@
       ·
       <button type="button" class="terms-btn" id="open-terms">Termos de Uso</button>
       <p style="margin-top:12px">
+        <strong>100% grátis, sempre.</strong>
         As imagens são processadas <strong>só no seu navegador</strong> e não são enviadas a servidor algum.
-        Usamos Google Analytics para medir acessos e cliques de forma anônima.
+        Usamos Google Analytics (que pode usar cookies) para medir acessos e cliques de forma anônima.
         Você é responsável pelos direitos das imagens que enviar.
+        <br><small>* Valores de assinatura/apoio citados nesta página são de 24/10/2026 e estão sujeitos a mudanças — confira sempre no YouTube.</small>
       </p>
       <p style="margin-top:6px;font-size:.8rem">
         © Yonasan · Ferramenta grátis para uso pessoal e legítimo ·
@@ -268,6 +397,16 @@
         membro do canal no YouTube ou contribuir via LivePix — mas isso é totalmente opcional.
       </p>
 
+      <h3>5. Valores e benefícios para membros</h3>
+      <p>
+        Os valores citados nesta página (como a assinatura de membro a partir de R$ 3,99*) foram conferidos em
+        <strong>24/10/2026</strong> e estão <strong>sujeitos a mudanças</strong> pelo YouTube ou pelo autor.
+        Vale sempre o valor exibido na página de membros do canal no momento da assinatura.
+        Os benefícios (como a versão desktop, wallpapers e chat exclusivo) podem ser alterados, ampliados ou
+        descontinuados com o tempo, e são entregues conforme as regras de cada nível de membro.
+      </p>
+      <p style="font-size:.8rem">*Valor de 24/10/2026, sujeito a mudanças.</p>
+
       <p style="margin-top:14px;font-size:.85rem">
         Ao usar o Remover de Fundos, você concorda com estes termos.
         Em caso de dúvidas: canal
@@ -281,6 +420,13 @@
   <div id="toast"></div>
 
   <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
   <script>
     // Segundo botão de termos no rodapé
     document.getElementById('open-terms-2')?.addEventListener('click', () => {
