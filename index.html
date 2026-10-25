@@ -28,7 +28,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=28">
+  <link rel="stylesheet" href="css/style.css?v=29">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#050a1c">
   <meta name="mobile-web-app-capable" content="yes">
@@ -134,6 +134,13 @@
             <canvas id="cv"></canvas>
             <div id="cr"></div>
           </div>
+          <div class="zb" id="zb">
+          <button type="button" id="zo" title="Diminuir zoom" aria-label="Diminuir zoom">−</button>
+          <button type="button" id="zr" title="Voltar ao tamanho normal">100%</button>
+          <button type="button" id="zi" title="Aumentar zoom" aria-label="Aumentar zoom">＋</button>
+          <button type="button" id="zp" title="Arrastar a imagem quando estiver com zoom">✋ Mover</button>
+        </div>
+        <p class="hint zh">🔍 Zoom: botões ＋/− ou <kbd>Ctrl</kbd> + rolagem do mouse</p>
         </div>
         <div class="tolb">
           <div class="trow"><b>Tolerância</b><span id="tv">40</span></div>
@@ -150,6 +157,11 @@
           <button class="pk" id="pk">🎯 Selecionar na imagem</button>
           <p class="hint" id="pkh" hidden>👆 Agora toque na imagem, em cima da cor do fundo. Pode tocar em várias cores.</p>
           <label class="ck2"><input type="checkbox" id="al" checked> Mostrar aviso antes de selecionar</label>
+          <div class="gh">Ou escolha uma cor</div>
+          <div class="cpk-row">
+            <input type="color" id="cpk" value="#00ff00" title="Escolher cor do fundo" aria-label="Escolher cor do fundo">
+            <span class="hint">Escolha a cor do fundo no seletor (em alguns navegadores ele tem um conta-gotas). Ela é removida a partir das bordas da imagem.</span>
+          </div>
           <div class="gh">Cores removidas (toque para tirar)</div>
           <div class="cols" id="swl"></div>
           <label class="ck2"><input type="checkbox" id="gl"> Remover em toda a imagem (inclusive buracos)</label>
@@ -419,7 +431,7 @@
 
   <div id="toast"></div>
 
-  <script src="js/app.js?v=28"></script>
+  <script src="js/app.js?v=29"></script>
   <script>
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       // Se uma versão antiga do site estava em cache, recarrega uma vez quando a nova assumir

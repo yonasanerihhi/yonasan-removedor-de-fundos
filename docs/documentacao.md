@@ -18,6 +18,8 @@ Não há upload para servidor: as imagens nunca saem do seu dispositivo.
 | Estúdio | Varinha mágica, pincel de apagar/restaurar, recorte e refinamento de bordas |
 | Múltiplas imagens | Processa várias de uma vez e baixa em arquivos separados ou ZIP |
 | Fundo no download | Transparente ou cores sólidas (verde, branco, etc.) |
+| Zoom | Botões ＋/−, Ctrl + rolagem e modo ✋ Mover (de 100% a 800%) |
+| Seletor de cor | Escolhe a cor do fundo no seletor e remove a partir das bordas |
 | Histórico | Desfazer / refazer / resetar |
 
 ---

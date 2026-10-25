@@ -22,6 +22,8 @@ Criada por [**Yonasan**](https://www.youtube.com/@YonasanErihhi/)
 - **Estúdio:** varinha mágica, pincel de apagar e restaurar, recorte e refinamento de bordas
 - **Várias imagens de uma vez:** baixe separadas ou em um ZIP
 - **Fundo no download:** transparente ou cores sólidas (verde, branco, etc.)
+- **Zoom:** botões ＋/− ou Ctrl + rolagem do mouse, com modo ✋ Mover para arrastar a imagem
+- **Seletor de cor:** escolha a cor do fundo direto no seletor (além de clicar na imagem)
 - **Histórico:** desfazer, refazer e resetar, além do botão 👁 para comparar com o original
 
 ## 🚀 Como usar

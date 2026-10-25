@@ -129,6 +129,7 @@ function use(it) {
 function save() {
   const t = cuIt;
   if (!t) return;
+  t.orig = orig; // inclui o recorte (antes só o 'cur' era guardado)
   t.cur = cur;
   t.hist = hist;
   t.redo = redo;
@@ -165,6 +166,7 @@ function sel(i) {
   save();
   use(items[i]);
   draw();
+  resetZoom();
   rsw();
   strip();
 }
@@ -453,7 +455,13 @@ function runSel() {
         if (v <= t) d[i + 3] = 0;
         else if (v < t * 1.4) fade(d, i, v, t);
       }
-    } else flood(orig, cur, picks.map((p) => [p.x, p.y]), cols, t);
+    } else {
+      const seeds = [];
+      let manual = false;
+      picks.forEach((p) => (p.x == null ? (manual = true) : seeds.push([p.x, p.y])));
+      if (manual) seeds.push(...edges()); // cor do seletor: remove a partir das bordas
+      flood(orig, cur, seeds, cols, t);
+    }
   }
   draw();
 }
@@ -526,7 +534,8 @@ $('#tol').onchange = () => {
 // ---------- modos e ferramentas ----------
 function ta() {
   cv.style.touchAction =
-    mode == 'e' && (tool == 'er' || tool == 'rs' || tool == 'cp') ? 'none' : 'auto';
+    panMode || (mode == 'e' && (tool == 'er' || tool == 'rs' || tool == 'cp')) ? 'none' : 'auto';
+  cv.style.cursor = panMode ? 'grab' : '';
 }
 
 $$('.tabs button[data-m]').forEach(
@@ -597,6 +606,12 @@ function showCrop() {
 
 cv.onpointerdown = (e) => {
   if (!orig) return;
+  if (panMode) {
+    panning = { x: e.clientX, y: e.clientY, l: st.scrollLeft, t: st.scrollTop };
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    return;
+  }
   const p = pt(e);
   if (mode == 's') {
     if (!pick) {
@@ -629,6 +644,11 @@ cv.onpointerdown = (e) => {
 };
 
 cv.onpointermove = (e) => {
+  if (panning) {
+    st.scrollLeft = panning.l - (e.clientX - panning.x);
+    st.scrollTop = panning.t - (e.clientY - panning.y);
+    return;
+  }
   if (!down) return;
   const p = pt(e);
   if (tool == 'cp') {
@@ -642,7 +662,13 @@ cv.onpointermove = (e) => {
   }
 };
 
-cv.onpointerup = cv.onpointercancel = () => (down = 0);
+cv.onpointerup = cv.onpointercancel = () => {
+  down = 0;
+  if (panning) {
+    panning = null;
+    cv.style.cursor = panMode ? 'grab' : '';
+  }
+};
 
 const sub = (d, x, y, w, h) => {
   const o = new ImageData(w, h);
@@ -662,9 +688,12 @@ function doCrop(x, y, w, h) {
   H = cv.height = h;
   hist = [];
   redo = [];
+  picks = [];
+  rsw();
   crop = null;
   $('#cr').style.display = 'none';
   draw();
+  resetZoom();
 }
 
 $('#ap').onclick = () => {
@@ -732,6 +761,104 @@ function morph(m) {
 }
 
 $$('[data-r]').forEach((b) => (b.onclick = () => morph(b.dataset.r)));
+
+// ---------- zoom ----------
+let zoom = 1, panMode = false, panning = null;
+
+function applyZoom() {
+  const bx = $('#st');
+  ['width', 'height', 'maxWidth', 'maxHeight'].forEach((k) => {
+    cv.style[k] = '';
+    bx.style[k] = '';
+  });
+  cv.style.removeProperty('max-width');
+  cv.style.removeProperty('max-height');
+  bx.style.overflow = '';
+  bx.style.boxSizing = '';
+  const label = $('#zr');
+  if (label) label.textContent = Math.round(zoom * 100) + '%';
+  if (zoom <= 1.001) return;
+  const fw = cv.clientWidth, fh = cv.clientHeight;
+  if (!fw || !fh) return;
+  bx.style.boxSizing = 'content-box';
+  bx.style.width = fw + 'px';
+  bx.style.height = fh + 'px';
+  bx.style.maxWidth = 'none';
+  bx.style.overflow = 'auto';
+  cv.style.setProperty('max-width', 'none', 'important');
+  cv.style.setProperty('max-height', 'none', 'important');
+  cv.style.width = fw * zoom + 'px';
+  cv.style.height = fh * zoom + 'px';
+}
+
+function setZoom(z, cx, cy) {
+  if (!orig) return;
+  z = Math.min(8, Math.max(1, z));
+  const bx = $('#st');
+  const r = cv.getBoundingClientRect();
+  if (cx == null) {
+    const b = bx.getBoundingClientRect();
+    cx = b.left + b.width / 2;
+    cy = b.top + b.height / 2;
+  }
+  const fx = r.width ? (cx - r.left) / r.width : 0.5;
+  const fy = r.height ? (cy - r.top) / r.height : 0.5;
+  zoom = z;
+  applyZoom();
+  if (zoom > 1.001) {
+    const r2 = cv.getBoundingClientRect();
+    bx.scrollLeft += r2.left + fx * r2.width - cx;
+    bx.scrollTop += r2.top + fy * r2.height - cy;
+  } else if (panMode) {
+    $('#zp').click();
+  }
+  if (crop) showCrop();
+}
+
+function resetZoom() {
+  zoom = 1;
+  if (panMode) {
+    panMode = false;
+    $('#zp')?.classList.remove('on');
+    ta();
+  }
+  applyZoom();
+}
+
+$('#zi').onclick = () => setZoom(zoom * 1.5);
+$('#zo').onclick = () => setZoom(zoom / 1.5);
+$('#zr').onclick = () => setZoom(1);
+$('#zp').onclick = () => {
+  panMode = !panMode;
+  $('#zp').classList.toggle('on', panMode);
+  ta();
+  if (panMode && zoom <= 1.001) toast('Aumente o zoom (＋) para poder mover a imagem 🔍');
+};
+st.addEventListener(
+  'wheel',
+  (e) => {
+    if (!orig || !(e.ctrlKey || e.metaKey)) return;
+    e.preventDefault();
+    setZoom(zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY);
+  },
+  { passive: false }
+);
+let rzT;
+addEventListener('resize', () => {
+  clearTimeout(rzT);
+  rzT = setTimeout(() => zoom > 1.001 && applyZoom(), 150);
+});
+
+// ---------- seletor de cor (modo "Selecionar fundo") ----------
+$('#cpk').addEventListener('change', (e) => {
+  if (!orig) return;
+  const h = e.target.value;
+  const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  picks.push({ x: null, y: null, c });
+  rsw();
+  runSel();
+  toast('Cor adicionada — removida a partir das bordas. Ative “Remover em toda a imagem” para tirar de todo lugar.');
+});
 
 // ---------- histórico e visual ----------
 function undo() {

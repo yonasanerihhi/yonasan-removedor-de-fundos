@@ -1,5 +1,5 @@
 /* Service worker: sempre tenta a rede primeiro (site sempre atualizado) e usa o cache só se estiver offline */
-const CACHE = 'remover-fundos-v3'; // troque o número a cada deploy
+const CACHE = 'remover-fundos-v4'; // troque o número a cada deploy
 const ASSETS = ['./', './index.html', './css/style.css', './js/app.js', './img/icon.png', './manifest.json'];
 
 self.addEventListener('install', (e) => {

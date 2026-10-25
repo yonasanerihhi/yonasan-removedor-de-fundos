@@ -1062,3 +1062,23 @@ footer .terms-btn:hover {
   color: var(--m);
   font-weight: 400;
 }
+
+/* ---- v29: zoom e seletor de cor ---- */
+.zb { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; }
+.zb button {
+  min-width: 42px; height: 34px; padding: 0 12px;
+  border-radius: 8px; border: 1px solid var(--ln);
+  background: rgba(9, 17, 44, 0.85); color: #fff;
+  font-weight: 700; font-size: 0.95rem; cursor: pointer;
+}
+.zb button:hover { border-color: var(--b2); }
+.zb button.on { background: var(--b); border-color: var(--b2); }
+.zh { text-align: center; margin: 6px 0 0; }
+.st[style*="overflow"] { text-align: left; }
+.cpk-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cpk-row input[type="color"] {
+  width: 48px; height: 38px; padding: 2px; flex: none;
+  border-radius: 8px; border: 2px solid #fff;
+  background: transparent; cursor: pointer;
+}
+.cpk-row .hint { margin: 0; }
